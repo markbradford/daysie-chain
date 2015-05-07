@@ -4,6 +4,7 @@ class GroupsController < ApplicationController
     @user = current_user
     @group = Group.new
     @event = Event.new
+    @groups = @user.groups
   end
 
   def create
@@ -12,12 +13,7 @@ class GroupsController < ApplicationController
     user.groups << group
     event = Event.create(:name => params[:event][:name], :desc => params[:event][:desc], :max => params[:event][:max], :loc => params[:event][:loc], :date => params[:event][:date], :time => params[:event][:time])
     user.groups.find(group.id).events << event
-    membership = user.memberships.create()
-    membership.group_id = group.id
-    membership.user_id = user.id
-    membership.admin = true
-    membership.save
-
+    user.memberships << group.memberships.create(admin:true)
     redirect_to user_groups_path(@current_user.id)
   end
 
